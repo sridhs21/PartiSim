@@ -156,3 +156,40 @@ class Atom:
         #Empirical formula: R = r0 * A^(1/3)
         r0 = self.settings.NUCLEUS_RADIUS_CONSTANT
         self.nucleus_radius = r0 * (self.mass_number ** (1/3))
+    
+    @staticmethod
+    def create_element(atomic_number, neutron_count=None, position=None, settings=None):
+        #Create an atom of a specified element.
+        atom = Atom(position=position, settings=settings)
+        
+        #Add protons
+        for _ in range(atomic_number):
+            atom.add_proton()
+        
+        #Add neutrons (default to stable isotope)
+        if neutron_count is None:
+            #Simple approximation for stable isotopes
+            if atomic_number <= 20:
+                neutron_count = atomic_number
+            else:
+                neutron_count = int(1.5 * atomic_number)
+        
+        for _ in range(neutron_count):
+            atom.add_neutron()
+        
+        #Build electron configuration
+        atom.build_electron_configuration()
+        
+        return atom
+    
+    @staticmethod
+    def create_random(settings):
+        #Create a random atom within parameters.
+        atomic_number = random.randint(1, 8)  #Keep it simple for visualization
+        position = np.array([
+            random.uniform(-settings.SIMULATION_BOUNDS, settings.SIMULATION_BOUNDS),
+            random.uniform(-settings.SIMULATION_BOUNDS, settings.SIMULATION_BOUNDS),
+            random.uniform(-settings.SIMULATION_BOUNDS, settings.SIMULATION_BOUNDS)
+        ])
+        
+        return Atom.create_element(atomic_number, position=position, settings=settings)
