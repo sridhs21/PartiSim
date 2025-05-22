@@ -101,3 +101,58 @@ class Atom:
         electron = Electron.create_for_orbital(n, l, m, spin, self.position, self.settings)
         self.electrons.append(electron)
         return electron
+    
+    def build_electron_configuration(self):
+        #Build electron configuration based on atomic number.
+        #Clear existing electrons
+        self.electrons = []
+        
+        #Simplified electron configuration according to aufbau principle
+        shells = [
+            {"n": 1, "orbitals": [(0, 0, 0.5), (0, 0, -0.5)]},  # 1s (2 electrons)
+            {"n": 2, "orbitals": [(0, 0, 0.5), (0, 0, -0.5),    # 2s (2 electrons)
+                                 (1, -1, 0.5), (1, -1, -0.5),   # 2p (6 electrons)
+                                 (1, 0, 0.5), (1, 0, -0.5),
+                                 (1, 1, 0.5), (1, 1, -0.5)]},
+            {"n": 3, "orbitals": [(0, 0, 0.5), (0, 0, -0.5),    # 3s (2 electrons)
+                                 (1, -1, 0.5), (1, -1, -0.5),   # 3p (6 electrons)
+                                 (1, 0, 0.5), (1, 0, -0.5),
+                                 (1, 1, 0.5), (1, 1, -0.5)]},   # 3d would follow
+            #more shells could be added
+        ]
+        
+        electrons_to_add = self.atomic_number
+        for shell in shells:
+            for orbital in shell["orbitals"]:
+                if electrons_to_add <= 0:
+                    break
+                self.add_electron(shell["n"], orbital[0], orbital[1], orbital[2])
+                electrons_to_add -= 1
+            if electrons_to_add <= 0:
+                break
+    
+    def update_element_info(self):
+        #Update element name and symbol based on atomic number.
+        elements = {
+            1: ("Hydrogen", "H"),
+            2: ("Helium", "He"),
+            3: ("Lithium", "Li"),
+            4: ("Beryllium", "Be"),
+            5: ("Boron", "B"),
+            6: ("Carbon", "C"),
+            7: ("Nitrogen", "N"),
+            8: ("Oxygen", "O"),
+            #Add more elements as needed
+        }
+        
+        if self.atomic_number in elements:
+            self.element_name, self.element_symbol = elements[self.atomic_number]
+        else:
+            self.element_name = f"Element-{self.atomic_number}"
+            self.element_symbol = f"E{self.atomic_number}"
+    
+    def update_nucleus_radius(self):
+        #Update the nucleus radius based on mass number.
+        #Empirical formula: R = r0 * A^(1/3)
+        r0 = self.settings.NUCLEUS_RADIUS_CONSTANT
+        self.nucleus_radius = r0 * (self.mass_number ** (1/3))
