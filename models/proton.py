@@ -10,8 +10,8 @@ class Proton(Particle):
             position=position, 
             velocity=velocity,
             mass=settings.PROTON_MASS if settings else 1.673e-27,  # Proton mass in kg
-            charge=1,   # Elementary positive charge
-            spin=0.5,   # Proton spin
+            charge=1,   #Elementary positive charge
+            spin=0.5,   #Proton spin
             settings=settings
         )
         
